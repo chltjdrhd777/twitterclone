@@ -5,6 +5,8 @@ import firebase from "./firebase";
 
 console.log(firebase);
 
+const doing = "test";
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
