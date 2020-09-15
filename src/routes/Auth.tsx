@@ -1,4 +1,4 @@
-import { authService } from "firebaseDB";
+import { authService, providerInstance } from "firebaseDB";
 import React, { useState } from "react";
 
 function Auth() {
@@ -32,11 +32,28 @@ function Auth() {
       console.log(data);
     } catch (error) {
       setError(error.message);
+      console.log(error.message);
     }
   };
 
   const toggleEvent = () => {
     setNewAccount((prev) => !prev);
+  };
+
+  const onSocialClick = async (e: any) => {
+    const {
+      target: { name },
+    } = e;
+
+    let provider = null;
+
+    if (name === "google") {
+      provider = new providerInstance.GoogleAuthProvider();
+    } else if (name === "github") {
+      provider = new providerInstance.GithubAuthProvider();
+    }
+    const data = await authService.signInWithPopup(provider!);
+    console.log(data);
   };
   ////////////////////////////////////////////////////////////////
   return (
@@ -68,8 +85,12 @@ function Auth() {
         {newAccount ? "Log in" : "Create your account"}
       </span>
       <div>
-        <button>Log in with Google</button>
-        <button>Log in with Github</button>
+        <button name="google" onClick={onSocialClick}>
+          Log in with Google
+        </button>
+        <button name="github" onClick={onSocialClick}>
+          Log in with Github
+        </button>
       </div>
     </div>
   );
