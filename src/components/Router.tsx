@@ -12,9 +12,11 @@ import Navigation from "./Navigation";
 
 interface AppPouterProps {
   isLoggedIn: boolean;
+  userInfo: { uid: string };
 }
 
-const AppRouter = ({ isLoggedIn }: AppPouterProps) => {
+const AppRouter = ({ isLoggedIn, userInfo }: AppPouterProps) => {
+  console.log(userInfo.uid);
   return (
     <Router>
       {isLoggedIn && <Navigation />}
@@ -22,7 +24,7 @@ const AppRouter = ({ isLoggedIn }: AppPouterProps) => {
         {isLoggedIn ? (
           <>
             <Route exact path="/">
-              <Home />
+              <Home userId={userInfo.uid} />
             </Route>
 
             <Route exact path="/profile">

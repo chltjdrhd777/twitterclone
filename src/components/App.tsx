@@ -5,10 +5,12 @@ import { authService } from "firebaseDB";
 function App() {
   const [init, setInit] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userObj, setUserObj] = useState(null as any);
   useEffect(() => {
     authService.onAuthStateChanged((user) => {
       if (user) {
         setIsLoggedIn(true);
+        setUserObj(user);
       } else {
         setIsLoggedIn(false);
       }
@@ -18,7 +20,11 @@ function App() {
 
   return (
     <>
-      {init ? <AppRouter isLoggedIn={isLoggedIn} /> : "plaese wait"}
+      {init ? (
+        <AppRouter isLoggedIn={isLoggedIn} userInfo={userObj} />
+      ) : (
+        "plaese wait"
+      )}
       <footer>@copyright:brr {new Date().getFullYear()} twitter clone</footer>
     </>
   );

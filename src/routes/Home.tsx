@@ -1,16 +1,22 @@
+import TweetManagement from "components/TweetManagement";
 import { dbService } from "firebaseDB";
 import React, { useEffect, useState } from "react";
 
-interface TweetDataForm {
+export interface TweetDataForm {
   createdDate: number;
   twitter: string;
   id: string;
+  creatorID: string;
 }
 
-function Home() {
+interface HomeProps {
+  userId: string;
+}
+
+function Home({ userId }: HomeProps) {
   const [tweetContent, setTweetContent] = useState("");
   const [tweets, setTweets] = useState([] as TweetDataForm[]);
-  const getTweetsFromServer = async () => {
+  /*  const getTweetsFromServer = async () => {
     const comments = await dbService.collection("tweeter").get();
     comments.forEach((document) => {
       const whatIsInThere = {
@@ -19,9 +25,18 @@ function Home() {
       } as TweetDataForm;
       setTweets((prev: any[]) => [whatIsInThere, ...prev]);
     });
-  };
+  }; */
   useEffect(() => {
-    getTweetsFromServer();
+    /*  getTweetsFromServer(); */
+
+    //! realtime update part
+    dbService.collection("tweeter").onSnapshot((snapshot) => {
+      const getTweetsFromServer = snapshot.docs.map((everyDoc) => ({
+        ...(everyDoc.data() as TweetDataForm),
+        id: everyDoc.id,
+      }));
+      setTweets(getTweetsFromServer);
+    });
   }, []);
 
   console.log(tweets);
@@ -30,6 +45,7 @@ function Home() {
     await dbService.collection("tweeter").add({
       twitter: tweetContent,
       createdDate: Date.now(),
+      creatorID: userId,
     });
     setTweetContent("");
   };
@@ -55,9 +71,11 @@ function Home() {
 
       <div>
         {tweets.map((e) => (
-          <div key={e.id}>
-            <h4>{e.twitter}</h4>
-          </div>
+          <TweetManagement
+            key={e.id}
+            props={e}
+            whoWroteThis={e.creatorID === userId}
+          />
         ))}
       </div>
     </div>
