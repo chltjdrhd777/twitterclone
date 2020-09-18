@@ -53,6 +53,7 @@ function TweetManagement(e: TweetManagementProps) {
       ) : (
         <>
           <h4>{e.props.twitter}</h4>{" "}
+          {e.props.attachedURL && <img src={e.props.attachedURL} alt="" />}
           {e.whoWroteThis && (
             <>
               <button onClick={onDelete}>Delete this</button>

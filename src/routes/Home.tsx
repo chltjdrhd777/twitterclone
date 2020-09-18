@@ -1,12 +1,14 @@
 import TweetManagement from "components/TweetManagement";
-import { dbService } from "firebaseDB";
+import { dbService, storageService } from "firebaseDB";
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export interface TweetDataForm {
-  createdDate: number;
-  twitter: string;
   id: string;
   creatorID: string;
+  attachedURL: string;
+  createdDate: number;
+  twitter: string;
 }
 
 interface HomeProps {
@@ -16,6 +18,7 @@ interface HomeProps {
 function Home({ userId }: HomeProps) {
   const [tweetContent, setTweetContent] = useState("");
   const [tweets, setTweets] = useState([] as TweetDataForm[]);
+  const [attachedFile, setAttachedFile] = useState(undefined);
   /*  const getTweetsFromServer = async () => {
     const comments = await dbService.collection("tweeter").get();
     comments.forEach((document) => {
@@ -41,13 +44,36 @@ function Home({ userId }: HomeProps) {
 
   console.log(tweets);
   const onSubmit = async (e: any) => {
+    e.persist();
+    let forAddURL = "";
+    if (attachedFile) {
+      const fileRefference = storageService
+        .ref()
+        .child(`${userId}/${uuidv4()}`);
+      const response = await fileRefference.putString(
+        attachedFile!,
+        "data_url"
+      );
+      forAddURL = await response.ref.getDownloadURL();
+    }
+
     e.preventDefault();
-    await dbService.collection("tweeter").add({
+    /* await dbService.collection("tweeter").add({
       twitter: tweetContent,
       createdDate: Date.now(),
       creatorID: userId,
     });
+    setTweetContent(""); */
+
+    const tweetInfo = {
+      twitter: tweetContent,
+      createdDate: Date.now(),
+      creatorID: userId,
+      attachedURL: forAddURL,
+    };
+    await dbService.collection("tweeter").add({ ...tweetInfo });
     setTweetContent("");
+    setAttachedFile(undefined);
   };
 
   const onChange = (e: any) => {
@@ -55,6 +81,25 @@ function Home({ userId }: HomeProps) {
       target: { value },
     } = e;
     setTweetContent(value);
+  };
+
+  const onFileChange = (e: any) => {
+    const {
+      target: { files },
+    } = e;
+    const targetImg = files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(targetImg); //! reads the file
+    reader.onloadend = (finish: any) => {
+      const {
+        currentTarget: { result },
+      } = finish;
+      setAttachedFile(result);
+    }; //! get the result
+  };
+
+  const deleteImage = () => {
+    setAttachedFile(undefined);
   };
   return (
     <div>
@@ -66,7 +111,14 @@ function Home({ userId }: HomeProps) {
           value={tweetContent}
           onChange={onChange}
         ></input>
+        <input type="file" accept="image/*" onChange={onFileChange} />
         <input type="submit" value="tweet" />
+        {attachedFile && (
+          <div>
+            <img src={attachedFile} alt="" />
+            <button onClick={deleteImage}>Clear Image</button>
+          </div>
+        )}
       </form>
 
       <div>
