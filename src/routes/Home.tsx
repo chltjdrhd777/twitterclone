@@ -11,7 +11,7 @@ export interface TweetDataForm {
   twitter: string;
 }
 
-interface HomeProps {
+export interface HomeProps {
   userId: string;
 }
 
@@ -42,7 +42,6 @@ function Home({ userId }: HomeProps) {
     });
   }, []);
 
-  console.log(tweets);
   const onSubmit = async (e: any) => {
     e.persist();
     let forAddURL = "";
@@ -115,7 +114,11 @@ function Home({ userId }: HomeProps) {
         <input type="submit" value="tweet" />
         {attachedFile && (
           <div>
-            <img src={attachedFile} alt="" />
+            <img
+              src={attachedFile}
+              style={{ width: "100px", height: "100px" }}
+              alt=""
+            />
             <button onClick={deleteImage}>Clear Image</button>
           </div>
         )}

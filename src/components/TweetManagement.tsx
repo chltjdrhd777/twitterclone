@@ -1,4 +1,4 @@
-import { dbService } from "firebaseDB";
+import { dbService, storageService } from "firebaseDB";
 import React, { useState } from "react";
 import { TweetDataForm } from "routes/Home";
 
@@ -14,6 +14,7 @@ function TweetManagement(e: TweetManagementProps) {
     const confirming = window.confirm("are you sure?");
     if (confirming) {
       await dbService.collection("tweeter").doc(`${e.props.id}`).delete();
+      await storageService.refFromURL(e.props.attachedURL).delete();
     }
   };
   const toggleEditing = () => setEdit((prev) => !prev);
@@ -53,7 +54,13 @@ function TweetManagement(e: TweetManagementProps) {
       ) : (
         <>
           <h4>{e.props.twitter}</h4>{" "}
-          {e.props.attachedURL && <img src={e.props.attachedURL} alt="" />}
+          {e.props.attachedURL && (
+            <img
+              src={e.props.attachedURL}
+              style={{ width: "50px", height: "50px" }}
+              alt=""
+            />
+          )}
           {e.whoWroteThis && (
             <>
               <button onClick={onDelete}>Delete this</button>

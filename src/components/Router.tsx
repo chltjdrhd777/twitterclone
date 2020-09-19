@@ -16,7 +16,6 @@ interface AppPouterProps {
 }
 
 const AppRouter = ({ isLoggedIn, userInfo }: AppPouterProps) => {
-  console.log(userInfo.uid);
   return (
     <Router>
       {isLoggedIn && <Navigation />}
@@ -28,7 +27,7 @@ const AppRouter = ({ isLoggedIn, userInfo }: AppPouterProps) => {
             </Route>
 
             <Route exact path="/profile">
-              <Profile />
+              <Profile userId={userInfo.uid} />
             </Route>
 
             <Redirect from="*" to="/" />
