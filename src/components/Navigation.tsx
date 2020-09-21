@@ -1,7 +1,9 @@
+import { authService } from "firebaseDB";
 import React from "react";
 import { Link } from "react-router-dom";
+import { AppPouterProps } from "./Router";
 
-function Navigation() {
+function Navigation({ userInfo }: AppPouterProps) {
   return (
     <nav>
       <ul>
@@ -10,7 +12,7 @@ function Navigation() {
         </li>
 
         <li>
-          <Link to="/profile">My profile</Link>
+          <Link to="/profile">{userInfo.displayName}</Link>
         </li>
       </ul>
     </nav>

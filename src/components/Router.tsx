@@ -10,15 +10,20 @@ import Auth from "../routes/Auth";
 import Home from "../routes/Home";
 import Navigation from "./Navigation";
 
-interface AppPouterProps {
-  isLoggedIn: boolean;
-  userInfo: { uid: string };
+export interface AppPouterProps {
+  isLoggedIn?: boolean;
+  userInfo: {
+    uid: string;
+    displayName?: string;
+    updateProfile: (args: string) => void;
+  };
+  refreshedUser?: any;
 }
 
-const AppRouter = ({ isLoggedIn, userInfo }: AppPouterProps) => {
+const AppRouter = ({ isLoggedIn, userInfo, refreshedUser }: AppPouterProps) => {
   return (
     <Router>
-      {isLoggedIn && <Navigation />}
+      {isLoggedIn && <Navigation userInfo={userInfo} />}
       <Switch>
         {isLoggedIn ? (
           <>
@@ -27,7 +32,7 @@ const AppRouter = ({ isLoggedIn, userInfo }: AppPouterProps) => {
             </Route>
 
             <Route exact path="/profile">
-              <Profile userId={userInfo.uid} />
+              <Profile userInfo={userInfo} refreshedUser={refreshedUser} />
             </Route>
 
             <Redirect from="*" to="/" />
